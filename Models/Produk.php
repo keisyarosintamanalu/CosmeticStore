@@ -3,37 +3,105 @@ class Produk {
 
     private $conn;
 
-    public function __construct($db) {
+    public function __construct($db){
         $this->conn = $db;
     }
 
-    public function getAll() {
-        return $this->conn->query("SELECT * FROM produk");
+    // 🔍 Ambil semua data + search
+    public function getAll($search = ""){
+        $sql = "SELECT * FROM produk 
+                WHERE nama_produk LIKE :search
+                ORDER BY id DESC";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute([
+            'search' => "%$search%"
+        ]);
+
+        return $stmt;
     }
 
-    public function getById($id) {
-        return $this->conn->query("SELECT * FROM produk WHERE id=$id");
+    // 🔎 Ambil 1 data berdasarkan ID (WAJIB untuk edit & keranjang)
+    public function getById($id){
+        $sql = "SELECT * FROM produk WHERE id = :id";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute([
+            'id' => $id
+        ]);
+
+        return $stmt;
     }
 
-    public function create($nama, $harga, $stok) {
-        return $this->conn->query(
-            "INSERT INTO produk(nama_produk, harga, stok)
-             VALUES('$nama','$harga','$stok')"
-        );
+    // ➕ Tambah produk (dengan gambar)
+    public function create($nama, $harga, $stok, $gambar){
+        $sql = "INSERT INTO produk 
+                (nama_produk, harga, stok, gambar, likes, rating)
+                VALUES (:nama, :harga, :stok, :gambar, 0, 0)";
+
+        $stmt = $this->conn->prepare($sql);
+
+        return $stmt->execute([
+            'nama'   => $nama,
+            'harga'  => $harga,
+            'stok'   => $stok,
+            'gambar' => $gambar
+        ]);
     }
 
-    public function update($id, $nama, $harga, $stok) {
-        return $this->conn->query(
-            "UPDATE produk SET 
-            nama_produk='$nama',
-            harga='$harga',
-            stok='$stok'
-            WHERE id=$id"
-        );
+    // ✏️ Update produk
+    public function update($id, $nama, $harga, $stok, $gambar){
+        $sql = "UPDATE produk SET
+                nama_produk = :nama,
+                harga       = :harga,
+                stok        = :stok,
+                gambar      = :gambar
+                WHERE id = :id";
+
+        $stmt = $this->conn->prepare($sql);
+
+        return $stmt->execute([
+            'id'     => $id,
+            'nama'   => $nama,
+            'harga'  => $harga,
+            'stok'   => $stok,
+            'gambar' => $gambar
+        ]);
     }
 
-    public function delete($id) {
-        return $this->conn->query("DELETE FROM produk WHERE id=$id");
+    // ❌ Hapus produk
+    public function delete($id){
+        $sql = "DELETE FROM produk WHERE id = :id";
+
+        $stmt = $this->conn->prepare($sql);
+
+        return $stmt->execute([
+            'id' => $id
+        ]);
     }
+
+    // 💖 Like produk (tambah 1)
+    public function like($id){
+        $sql = "UPDATE produk SET likes = likes + 1 WHERE id = :id";
+
+        $stmt = $this->conn->prepare($sql);
+
+        return $stmt->execute([
+            'id' => $id
+        ]);
+    }
+
+    // ⭐ Rating produk
+    public function rate($id, $rating){
+        $sql = "UPDATE produk SET rating = :rating WHERE id = :id";
+
+        $stmt = $this->conn->prepare($sql);
+
+        return $stmt->execute([
+            'id'     => $id,
+            'rating' => $rating
+        ]);
+    }
+
 }
 ?>

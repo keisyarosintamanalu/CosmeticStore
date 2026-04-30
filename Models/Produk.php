@@ -7,7 +7,6 @@ class Produk {
         $this->conn = $db;
     }
 
-    // 🔍 Ambil semua data + search
     public function getAll($search = ""){
         $sql = "SELECT * FROM produk 
                 WHERE nama_produk LIKE :search
@@ -21,7 +20,6 @@ class Produk {
         return $stmt;
     }
 
-    // 🔎 Ambil 1 data berdasarkan ID (WAJIB untuk edit & keranjang)
     public function getById($id){
         $sql = "SELECT * FROM produk WHERE id = :id";
 
@@ -30,14 +28,14 @@ class Produk {
             'id' => $id
         ]);
 
-        return $stmt;
+        // ✅ WAJIB pakai fetch (biar tidak error di cart dropdown)
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    // ➕ Tambah produk (dengan gambar)
     public function create($nama, $harga, $stok, $gambar){
         $sql = "INSERT INTO produk 
-                (nama_produk, harga, stok, gambar, likes, rating)
-                VALUES (:nama, :harga, :stok, :gambar, 0, 0)";
+                (nama_produk, harga, stok, gambar, likes, rating, terjual)
+                VALUES (:nama, :harga, :stok, :gambar, 0, 0, 0)";
 
         $stmt = $this->conn->prepare($sql);
 
@@ -45,11 +43,10 @@ class Produk {
             'nama'   => $nama,
             'harga'  => $harga,
             'stok'   => $stok,
-            'gambar' => $gambar
+            'gambar' => $gambar ?: 'default.png' // fallback gambar
         ]);
     }
 
-    // ✏️ Update produk
     public function update($id, $nama, $harga, $stok, $gambar){
         $sql = "UPDATE produk SET
                 nama_produk = :nama,
@@ -65,11 +62,10 @@ class Produk {
             'nama'   => $nama,
             'harga'  => $harga,
             'stok'   => $stok,
-            'gambar' => $gambar
+            'gambar' => $gambar ?: 'default.png'
         ]);
     }
 
-    // ❌ Hapus produk
     public function delete($id){
         $sql = "DELETE FROM produk WHERE id = :id";
 
@@ -80,7 +76,6 @@ class Produk {
         ]);
     }
 
-    // 💖 Like produk (tambah 1)
     public function like($id){
         $sql = "UPDATE produk SET likes = likes + 1 WHERE id = :id";
 
@@ -91,7 +86,6 @@ class Produk {
         ]);
     }
 
-    // ⭐ Rating produk
     public function rate($id, $rating){
         $sql = "UPDATE produk SET rating = :rating WHERE id = :id";
 
@@ -100,6 +94,20 @@ class Produk {
         return $stmt->execute([
             'id'     => $id,
             'rating' => $rating
+        ]);
+    }
+
+    public function updateStokTerjual($id, $qty){
+        $sql = "UPDATE produk 
+                SET stok = stok - :qty,
+                    terjual = terjual + :qty
+                WHERE id = :id";
+
+        $stmt = $this->conn->prepare($sql);
+
+        return $stmt->execute([
+            'id'  => $id,
+            'qty' => $qty
         ]);
     }
 

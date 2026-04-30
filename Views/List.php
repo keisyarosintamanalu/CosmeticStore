@@ -31,19 +31,29 @@ body { background:#fff0f5; }
 <div class="col-md-3 mb-4">
 <div class="card product-card p-2 text-center">
 
-<img src="uploads/<?= $row['gambar']; ?>" class="product-img">
+<img src="uploads/<?= $row['gambar'] ?: 'default.png'; ?>" class="product-img">
 
-<h6><?= $row['nama_produk']; ?></h6>
+<h6 class="mt-2"><?= $row['nama_produk']; ?></h6>
 
-<p class="text-danger">
+<p class="text-danger fw-bold">
     Rp <?= number_format($row['harga'], 0, ',', '.'); ?>
 </p>
 
-<span class="badge bg-success mb-2">
-    Stok: <?= $row['stok']; ?>
-</span>
+<div class="d-flex justify-content-center gap-2 mb-2">
+    <span class="badge bg-success">
+        Stok: <?= $row['stok']; ?>
+    </span>
 
-<a href="index.php?like=<?= $row['id']; ?>" class="btn btn-outline-danger btn-sm">
+    <span class="badge bg-primary">
+        Terjual: <?= $row['terjual']; ?>
+    </span>
+</div>
+
+<?php if($row['stok'] == 0): ?>
+<span class="badge bg-danger mb-2">Habis</span>
+<?php endif; ?>
+
+<a href="index.php?like=<?= $row['id']; ?>" class="btn btn-outline-danger btn-sm mb-1">
     💖 <?= $row['likes']; ?>
 </a>
 
@@ -58,16 +68,18 @@ body { background:#fff0f5; }
         <option value="1">⭐</option>
     </select>
 
-    <button name="rating" class="btn btn-pink btn-sm mt-1">Kirim</button>
+    <button name="kirim_rating" class="btn btn-pink btn-sm mt-1">
+        Kirim
+    </button>
 </form>
 
 <p class="mt-1">⭐ <?= $row['rating']; ?></p>
 
-<a href="index.php?tambah=<?= $row['id']; ?>" class="btn btn-success btn-sm">
+<a href="index.php?tambah=<?= $row['id']; ?>" class="btn btn-success btn-sm mb-1">
    🛒 Tambah ke Keranjang
 </a>
 
-<a href="views/edit.php?id=<?= $row['id']; ?>" class="btn btn-warning btn-sm">
+<a href="views/edit.php?id=<?= $row['id']; ?>" class="btn btn-warning btn-sm mb-1">
     Edit
 </a>
 

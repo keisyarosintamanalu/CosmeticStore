@@ -33,9 +33,9 @@ body { background:#fff0f5; }
 
 <img src="uploads/<?= $row['gambar'] ?: 'default.png'; ?>" class="product-img">
 
-<h6 class="mt-2"><?= $row['nama_produk']; ?></h6>
+<h6><?= $row['nama_produk']; ?></h6>
 
-<p class="text-danger fw-bold">
+<p class="text-danger">
     Rp <?= number_format($row['harga'], 0, ',', '.'); ?>
 </p>
 
@@ -49,15 +49,11 @@ body { background:#fff0f5; }
     </span>
 </div>
 
-<?php if($row['stok'] == 0): ?>
-<span class="badge bg-danger mb-2">Habis</span>
-<?php endif; ?>
-
 <a href="index.php?like=<?= $row['id']; ?>" class="btn btn-outline-danger btn-sm mb-1">
     💖 <?= $row['likes']; ?>
 </a>
 
-<form method="POST" class="mt-1">
+<form method="POST">
     <input type="hidden" name="id" value="<?= $row['id']; ?>">
 
     <select name="rating" class="form-select form-select-sm">
@@ -68,7 +64,7 @@ body { background:#fff0f5; }
         <option value="1">⭐</option>
     </select>
 
-    <button name="kirim_rating" class="btn btn-pink btn-sm mt-1">
+    <button name="rating" class="btn btn-pink btn-sm mt-1">
         Kirim
     </button>
 </form>

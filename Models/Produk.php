@@ -21,14 +21,8 @@ class Produk {
     }
 
     public function getById($id){
-        $sql = "SELECT * FROM produk WHERE id = :id";
-
-        $stmt = $this->conn->prepare($sql);
-        $stmt->execute([
-            'id' => $id
-        ]);
-
-        // ✅ WAJIB pakai fetch (biar tidak error di cart dropdown)
+        $stmt = $this->conn->prepare("SELECT * FROM produk WHERE id=:id");
+        $stmt->execute(['id'=>$id]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
@@ -43,16 +37,16 @@ class Produk {
             'nama'   => $nama,
             'harga'  => $harga,
             'stok'   => $stok,
-            'gambar' => $gambar ?: 'default.png' // fallback gambar
+            'gambar' => $gambar ?: 'default.png'
         ]);
     }
 
     public function update($id, $nama, $harga, $stok, $gambar){
         $sql = "UPDATE produk SET
                 nama_produk = :nama,
-                harga       = :harga,
-                stok        = :stok,
-                gambar      = :gambar
+                harga = :harga,
+                stok = :stok,
+                gambar = :gambar
                 WHERE id = :id";
 
         $stmt = $this->conn->prepare($sql);
@@ -67,49 +61,21 @@ class Produk {
     }
 
     public function delete($id){
-        $sql = "DELETE FROM produk WHERE id = :id";
-
-        $stmt = $this->conn->prepare($sql);
-
-        return $stmt->execute([
-            'id' => $id
-        ]);
+        $stmt = $this->conn->prepare("DELETE FROM produk WHERE id=:id");
+        return $stmt->execute(['id'=>$id]);
     }
 
     public function like($id){
-        $sql = "UPDATE produk SET likes = likes + 1 WHERE id = :id";
-
-        $stmt = $this->conn->prepare($sql);
-
-        return $stmt->execute([
-            'id' => $id
-        ]);
+        $stmt = $this->conn->prepare("UPDATE produk SET likes = likes + 1 WHERE id=:id");
+        return $stmt->execute(['id'=>$id]);
     }
 
     public function rate($id, $rating){
-        $sql = "UPDATE produk SET rating = :rating WHERE id = :id";
-
-        $stmt = $this->conn->prepare($sql);
-
+        $stmt = $this->conn->prepare("UPDATE produk SET rating = :rating WHERE id = :id");
         return $stmt->execute([
-            'id'     => $id,
-            'rating' => $rating
+            'id'=>$id,
+            'rating'=>$rating
         ]);
     }
-
-    public function updateStokTerjual($id, $qty){
-        $sql = "UPDATE produk 
-                SET stok = stok - :qty,
-                    terjual = terjual + :qty
-                WHERE id = :id";
-
-        $stmt = $this->conn->prepare($sql);
-
-        return $stmt->execute([
-            'id'  => $id,
-            'qty' => $qty
-        ]);
-    }
-
 }
 ?>

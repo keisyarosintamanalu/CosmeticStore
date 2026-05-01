@@ -1,11 +1,16 @@
 <?php
-include_once "../controllers/ProdukController.php";
-$controller = new ProdukController();
+include_once "../config/Database.php";
+include_once "../models/Produk.php";
+
+$db = (new Database())->connect();
+$model = new Produk($db);
 
 $id = $_GET['id'];
+$data = $model->getById($id);
 
-$data = $controller->model->getById($id);
-$row = $data->fetch(PDO::FETCH_ASSOC);
+if(!$data){
+    die("Data tidak ditemukan");
+}
 
 if(isset($_POST['update'])){
 
@@ -13,36 +18,70 @@ if(isset($_POST['update'])){
     $harga = $_POST['harga'];
     $stok  = $_POST['stok'];
 
-    // upload gambar baru (opsional)
-    if($_FILES['gambar']['name'] != ""){
-        $gambar = $_FILES['gambar']['name'];
-        move_uploaded_file($_FILES['gambar']['tmp_name'], "../uploads/".$gambar);
-    } else {
-        $gambar = $row['gambar'];
+    $gambar = $data['gambar']; // default gambar lama
+
+    if($_FILES['gambar']['name']){
+        $file = $_FILES['gambar']['name'];
+        $tmp  = $_FILES['gambar']['tmp_name'];
+
+        move_uploaded_file($tmp, "../uploads/".$file);
+        $gambar = $file;
     }
 
-    $controller->model->update($id,$nama,$harga,$stok,$gambar);
+    $model->update($id, $nama, $harga, $stok, $gambar);
 
-    header("Location: ../index.php");
+    echo "<script>
+        alert('Produk berhasil diupdate!');
+        window.location='../index.php';
+    </script>";
 }
 ?>
 
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<div class="container mt-5">
+
+<div class="card shadow p-4" style="max-width:500px;margin:auto;border-radius:15px;">
+
+<h3 class="text-center text-danger mb-4">✏ Edit Produk</h3>
+
 <form method="POST" enctype="multipart/form-data">
 
-Nama:
-<input type="text" name="nama" value="<?= $row['nama_produk']; ?>"><br>
+<label class="form-label fw-bold">Nama Produk</label>
+<input type="text" name="nama" class="form-control mb-3"
+value="<?= $data['nama_produk']; ?>" required>
 
-Harga:
-<input type="number" name="harga" value="<?= $row['harga']; ?>"><br>
+<label class="form-label fw-bold">Harga (Rp)</label>
+<input type="number" name="harga" class="form-control mb-3"
+value="<?= $data['harga']; ?>" required>
 
-Stok:
-<input type="number" name="stok" value="<?= $row['stok']; ?>"><br>
+<label class="form-label fw-bold">Stok</label>
+<input type="number" name="stok" class="form-control mb-3"
+value="<?= $data['stok']; ?>" required>
 
-Gambar:
-<input type="file" name="gambar"><br>
+<label class="form-label fw-bold">Gambar Produk</label>
 
-<img src="../uploads/<?= $row['gambar']; ?>" width="100"><br>
+<div class="mb-3 text-center">
+<img src="../uploads/<?= $data['gambar']; ?>"
+width="120" style="border-radius:10px;">
+</div>
 
-<button name="update">Update</button>
+<input type="file" name="gambar" class="form-control mb-3">
+
+<small class="text-muted">
+Kosongkan jika tidak ingin mengganti gambar
+</small>
+
+<button name="update" class="btn btn-success w-100 mt-3">
+💾 Simpan Perubahan
+</button>
+
+<a href="../index.php" class="btn btn-secondary w-100 mt-2">
+⬅ Kembali
+</a>
 
 </form>
+
+</div>
+
+</div>

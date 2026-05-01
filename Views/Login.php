@@ -17,9 +17,14 @@ if(isset($_POST['login'])){
         'pass' => $password
     ]);
 
-    if($stmt->rowCount() > 0){
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if($row){
         $_SESSION['login'] = true;
-        $_SESSION['username'] = $username;
+        $_SESSION['username'] = $row['username'];
+
+        $_SESSION['role'] = $row['role']; 
+
         header("Location: ../index.php");
         exit;
     } else {
@@ -31,7 +36,7 @@ if(isset($_POST['login'])){
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Login Admin</title>
+    <title>Login</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
@@ -40,7 +45,7 @@ if(isset($_POST['login'])){
 <div class="container mt-5">
     <div class="card p-4 mx-auto" style="max-width:400px;">
         
-        <h3 class="text-center mb-3">🔐 Login Admin</h3>
+        <h3 class="text-center mb-3">🔐 Login</h3>
 
         <?php if($error): ?>
             <div class="alert alert-danger"><?= $error; ?></div>

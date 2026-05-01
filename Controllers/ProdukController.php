@@ -7,9 +7,7 @@ class ProdukController {
     public $model;
 
     public function __construct() {
-        $database = new Database();
-        $db = $database->connect();
-
+        $db = (new Database())->connect();
         $this->model = new Produk($db);
     }
 }

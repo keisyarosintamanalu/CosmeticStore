@@ -54,19 +54,19 @@ body { background:#fff0f5; }
 </a>
 
 <form method="POST">
-    <input type="hidden" name="id" value="<?= $row['id']; ?>">
+<input type="hidden" name="id" value="<?= $row['id']; ?>">
 
-    <select name="rating" class="form-select form-select-sm">
-        <option value="5">⭐⭐⭐⭐⭐</option>
-        <option value="4">⭐⭐⭐⭐</option>
-        <option value="3">⭐⭐⭐</option>
-        <option value="2">⭐⭐</option>
-        <option value="1">⭐</option>
-    </select>
+<select name="nilai" class="form-select form-select-sm">
+<option value="5">⭐⭐⭐⭐⭐</option>
+<option value="4">⭐⭐⭐⭐</option>
+<option value="3">⭐⭐⭐</option>
+<option value="2">⭐⭐</option>
+<option value="1">⭐</option>
+</select>
 
-    <button name="rating" class="btn btn-pink btn-sm mt-1">
-        Kirim
-    </button>
+<button name="kirim_rating" class="btn btn-pink btn-sm mt-1">
+Kirim
+</button>
 </form>
 
 <p class="mt-1">⭐ <?= $row['rating']; ?></p>

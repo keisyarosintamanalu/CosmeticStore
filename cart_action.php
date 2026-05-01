@@ -1,22 +1,23 @@
 <?php
 session_start();
+header('Content-Type: application/json');
 
-$id = $_GET['id'];
-$act = $_GET['act'];
+$id = (int)$_POST['id'];
+$action = $_POST['action'];
 
-if($act == "inc"){
-    $_SESSION['cart'][$id]++;
+if(!isset($_SESSION['cart'])){
+    $_SESSION['cart'] = [];
 }
 
-if($act == "dec"){
+if($action == "inc"){
+    $_SESSION['cart'][$id] = ($_SESSION['cart'][$id] ?? 0) + 1;
+}
+
+if($action == "dec"){
     $_SESSION['cart'][$id]--;
     if($_SESSION['cart'][$id] <= 0){
         unset($_SESSION['cart'][$id]);
     }
 }
 
-if($act == "del"){
-    unset($_SESSION['cart'][$id]);
-}
-
-header("Location: index.php");
+echo json_encode(['total_item'=>array_sum($_SESSION['cart'])]);
